@@ -9,7 +9,7 @@ class ReversePageConstraint extends PageConstraint
      *
      * @var \Laravel\BrowserKitTesting\Constraints\PageConstraint
      */
-    protected readonly PageConstraint $pageConstraint;
+    protected $pageConstraint;
 
     /**
      * Create a new reverse page constraint instance.
@@ -30,7 +30,7 @@ class ReversePageConstraint extends PageConstraint
      */
     public function matches($crawler): bool
     {
-        return ! (fn () => $this->matches($crawler))->call($this->pageConstraint);
+        return ! $this->pageConstraint->matches($crawler);
     }
 
     /**
@@ -42,7 +42,7 @@ class ReversePageConstraint extends PageConstraint
      */
     protected function getFailureDescription()
     {
-        return (fn () => $this->getReverseFailureDescription())->call($this->pageConstraint);
+        return $this->pageConstraint->getReverseFailureDescription();
     }
 
     /**

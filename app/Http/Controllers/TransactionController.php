@@ -23,9 +23,15 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         if ($request->ajax()) {
 
-            $data = Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->get();
+            if ($user->role == 'karyawan') {
+                $data = Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get();
+            } else {
+                $data = Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->orderBy('transactions.created_at', 'desc')->get();
+            }
 
             return Datatables::of($data)->addIndexColumn()->make(true);
         }
@@ -55,7 +61,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->user;
+        $user = Auth::user()->role == 'karyawan' ? Auth::user()->id : $request->user;
         $date = $request->date;
 
         if ($request->type == 'pembelian') {
@@ -77,7 +83,8 @@ class TransactionController extends Controller
                 // Pastikan produk ditemukan sebelum mengupdate
                 if ($product) {
                     $product->update([
-                        'status' => 'in_use',
+                        'status' => Auth::user()->role == 'karyawan' ? 'available' : 'in_use',
+                        'user_id' =>  Auth::user()->role == 'karyawan' ? null : $user
                     ]);
 
                     // Simpan produk ke dalam array
@@ -92,6 +99,7 @@ class TransactionController extends Controller
                 // Pastikan produk ditemukan sebelum mengupdate
                 if ($product) {
                     $product->update([
+                        'user_id' => null,
                         'status' => 'available',
                     ]);
 
@@ -102,9 +110,10 @@ class TransactionController extends Controller
         }
 
         $transaction = Transaction::create([
-            'uuid' => "INV" .  date('Ymd') . rand(100, 9999),
+            'uuid' => "TRX" .  date('Ymd') . rand(100, 9999),
             'user_id' => $user,
             'type' => $request->type,
+            'status' => Auth::user()->role == 'karyawan' ? 'pengajuan' : 'approve',
             'date' => $date,
         ]);
 
@@ -173,7 +182,7 @@ class TransactionController extends Controller
         User::where('id', $karyawan->id)
             ->update($validasi);
 
-        return redirect('/karyawan')->with('success', 'Berhasil Diubah!!');
+        return redirect('/transaction')->with('success', 'Berhasil Diubah!!');
     }
 
     /**
@@ -187,5 +196,117 @@ class TransactionController extends Controller
         Transaction::where('id', $id)->delete();
         TransactionDetail::where('transaction_id', $id)->delete();
         return redirect('/transaction')->with('success', 'Berhasil Dihapus!!');
+    }
+
+    public function approve(Request $request)
+    {
+        $id = $request->id;
+        // Mengupdate status transaksi
+        $transaction = Transaction::find($id);
+        if ($transaction) {
+            $transaction->update([
+                'status' => 'approve'
+            ]);
+
+            // Mengambil detail transaksi dan memperbarui produk terkait
+            $details = TransactionDetail::where('transaction_id', $id)->get();
+            foreach ($details as $detail) {
+                $product = Product::find($detail->product_id);
+                if ($product) {
+                    if ($transaction->type == 'dipakai') {
+                        // Mengupdate status produk
+                        $product->update([
+                            'status' => 'in_use',
+                            'user_id' => $transaction->user_id
+                        ]);
+                    } elseif ($transaction->type == 'dikembalikan') {
+                        // Mengupdate status produk
+                        $product->update([
+                            'status' => 'available',
+                            'user_id' => null
+                        ]);
+                    }
+                }
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Berhasil di Approve',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaksi tidak ditemukan',
+            ]);
+        }
+    }
+
+    public function tolak(Request $request)
+    {
+        $id = $request->id;
+        // Mengupdate status transaksi
+        $transaction = Transaction::find($id);
+        if ($transaction) {
+            $transaction->update([
+                'status' => 'ditolak'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Berhasil di Approve',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaksi tidak ditemukan',
+            ]);
+        }
+    }
+    public function kembalikan(Request $request)
+    {
+        $user = Auth::user()->role == 'karyawan' ? Auth::user()->id : $request->user;
+        $date = date('Y-m-d');
+        $product = Product::find($request->id);
+
+        // return $request->products;
+        // foreach ($request->products as $value) {
+        //     $product = Product::find($value['asset']);
+
+        //     // Pastikan produk ditemukan sebelum mengupdate
+        //     if ($product) {
+        //         $product->update([
+        //             'user_id' => null,
+        //             'status' => 'available',
+        //         ]);
+
+        //         // Simpan produk ke dalam array
+        //         $products[] = $product;
+        //     }
+        // }
+
+        $transaction = Transaction::create([
+            'uuid' => "TRX" .  date('Ymd') . rand(100, 9999),
+            'user_id' => $user,
+            'type' => 'dikembalikan',
+            'status' => Auth::user()->role == 'karyawan' ? 'pengajuan' : 'approve',
+            'date' => $date,
+        ]);
+        $transactiondetail = TransactionDetail::create([
+            'transaction_id' => $transaction->id,
+            'product_id' => $product->id,
+            'quantity' => 1,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil di Kembalikan',
+        ]);
+
+        // foreach ($products as $key => $value) {
+        // $transactiondetail = TransactionDetail::create([
+        //     'transaction_id' => $transaction->id,
+        //     'product_id' => $value['id'],
+        //     'quantity' => 1,
+        // ]);
+        // }
     }
 }

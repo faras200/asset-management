@@ -11,14 +11,14 @@ class HasInElement extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $element;
+    protected $element;
 
     /**
      * The text expected to be found.
      *
      * @var string
      */
-    protected readonly string $text;
+    protected $text;
 
     /**
      * Create a new constraint instance.

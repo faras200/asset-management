@@ -74,33 +74,55 @@
 
             <!-- Navigation -->
             <ul class="navbar-nav">
-                <li class="nav-item <?php echo e(Request::is('dashboard') ? 'active' : ''); ?>">
-                    <a class="nav-link" href="/dashboard">
+                <li class="nav-item">
+                    <a class="nav-link <?php echo e(Request::is('dashboard') ? 'active' : ''); ?>" href="/dashboard">
                         <i class="ni ni-tv-2 text-primary"></i> <?php echo e(__('Dashboard')); ?>
 
                     </a>
                 </li>
-                
-                <li class="nav-item <?php echo e(Request::is('karyawan') ? 'active' : ''); ?>"">
-                    <a class="nav-link" href="/karyawan">
-                        <i class="ni ni-badge text-warning"></i> <?php echo e(__('Karyawan')); ?>
+                <?php if(auth()->user()->role == 'karyawan'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(Request::is('my-asset') ? 'active' : ''); ?>" href="/my-asset">
+                            <i class="ni ni-bag-17 text-warning"></i> <?php echo e(__('My Asset')); ?>
 
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/product-category">
-                        <i class="ni ni-settings-gear-65 text-default"></i> <?php echo e(__('Kategori Asset')); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if(auth()->user()->role == 'admin'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(Request::is('administrator') ? 'active' : ''); ?>" href="/administrator">
+                            <i class="ni ni-single-02 text-info"></i> <?php echo e(__('Administrator')); ?>
 
-                    </a>
-                </li>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(Request::is('karyawan') ? 'active' : ''); ?>" href="/karyawan">
+                            <i class="ni ni-badge text-warning"></i> <?php echo e(__('Karyawan')); ?>
+
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(Request::is('product-category') ? 'active' : ''); ?>"
+                            href="/product-category">
+                            <i class="ni ni-bullet-list-67 text-default"></i> <?php echo e(__('Kategori Asset')); ?>
+
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(Request::is('pengajuan') ? 'active' : ''); ?>" href="/pengajuan">
+                            <i class="ni ni-paper-diploma text-yellow"></i> <?php echo e(__('Pengajuan Pinjam')); ?>
+
+                        </a>
+                    </li>
+                <?php endif; ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="/product">
+                    <a class="nav-link <?php echo e(Request::is('product') ? 'active' : ''); ?>" href="/product">
                         <i class="ni ni-collection text-info"></i> <?php echo e(__('Asset')); ?>
 
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/transaction">
+                    <a class="nav-link <?php echo e(Request::is('transaction') ? 'active' : ''); ?>" href="/transaction">
                         <i class="ni ni-planet text-success"></i> <?php echo e(__('Transaksi')); ?>
 
                     </a>

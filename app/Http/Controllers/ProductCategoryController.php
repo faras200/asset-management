@@ -83,20 +83,15 @@ class ProductCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $karyawan)
+    public function update(Request $request, ProductCategory $productCategory)
     {
         $rules = [
             'name' => 'required|max:255',
-            'alamat'  => 'required:max:5000',
         ];
-
-        if ($request->code != $karyawan->code) {
-            $rules['code'] = 'required|unique:user';
-        }
 
         $validasi = $request->validate($rules);
 
-        User::where('id', $karyawan->id)
+        ProductCategory::where('id', $productCategory->id)
             ->update($validasi);
 
         return redirect('/product-category')->with('success', 'Berhasil Diubah!!');

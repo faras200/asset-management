@@ -12,7 +12,7 @@ class IsChecked extends FormFieldConstraint
      */
     public function __construct($selector)
     {
-        parent::__construct($selector, null);
+        $this->selector = $selector;
     }
 
     /**

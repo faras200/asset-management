@@ -10,7 +10,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <h5 class="card-title text-uppercase text-muted mb-0">Assets</h5>
+                                        <h5 class="card-title text-uppercase text-muted mb-0">Total Asset</h5>
                                         <span class="h2 font-weight-bold mb-0"><?php echo e($assets->count()); ?></span>
                                     </div>
                                     <div class="col-auto">
@@ -30,8 +30,9 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <h5 class="card-title text-uppercase text-muted mb-0">Transaksi</h5>
-                                        <span class="h2 font-weight-bold mb-0"><?php echo e($transactions->count()); ?></span>
+                                        <h5 class="card-title text-uppercase text-muted mb-0">Harga Asset</h5>
+                                        <span
+                                            class="h2 font-weight-bold mb-0"><?php echo e('Rp ' . number_format($assets->sum('price'), 0, ',', '.')); ?></span>
                                     </div>
                                     <div class="col-auto">
                                         <div class="icon icon-shape bg-warning text-white rounded-circle shadow">

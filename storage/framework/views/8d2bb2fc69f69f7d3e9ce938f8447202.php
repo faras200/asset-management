@@ -51,6 +51,7 @@
                                         <th scope="col">Karyawan</th>
                                         <th scope="col">Tanggal</th>
                                         <th scope="col">Type</th>
+                                        <th scope="col">Status</th>
                                         <th scope="col" class="text-right">Aksi</th>
                                     </tr>
                                 </thead>
@@ -179,7 +180,10 @@
                         data: 'type',
                         name: 'type'
                     },
-
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
                     {
                         render: function(data, type, row) {
                             return '<div style="text-align: right;">' +

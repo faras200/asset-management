@@ -12,14 +12,14 @@ class HasLink extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $text;
+    protected $text;
 
     /**
      * The URL expected to be linked in the <a> tag.
      *
      * @var string|null
      */
-    protected readonly string|null $url;
+    protected $url;
 
     /**
      * Create a new constraint instance.

@@ -9,7 +9,7 @@ class HasText extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $text;
+    protected $text;
 
     /**
      * Create a new constraint instance.

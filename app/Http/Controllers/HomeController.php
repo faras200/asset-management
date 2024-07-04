@@ -8,6 +8,7 @@ use App\Models\Device;
 use App\Models\Karyawan;
 use App\Models\Product;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -28,10 +29,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('dashboard', [
-            'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->get(),
-            'karyawans' => User::all(),
-            'assets' => Product::all(),
-        ]);
+        $user = Auth::user();
+
+        if ($user->role == 'karyawan') {
+            return view('dashboard', [
+                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get(),
+                'karyawans' => User::all(),
+                'assets' => Product::where('user_id', $user->id)->orderBy('created_at', 'desc')->get(),
+            ]);
+        } else {
+            return view('dashboard', [
+                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->get(),
+                'karyawans' => User::all(),
+                'assets' => Product::all(),
+            ]);
+        }
     }
 }

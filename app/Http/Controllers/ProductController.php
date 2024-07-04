@@ -5,14 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Penggajian;
+use App\Models\AccessToken;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
+    private static $client;
+    private static $hostUrl = 'https://account.accurate.id';
+    private static $clientID = '8868f05f-a03b-4802-a293-61a4a79a00f2';
+    private static $clientSecret = '7534ca50678ef6edecf7c56776e27a08';
+
+    public function __construct()
+    {
+        self::$client = new \GuzzleHttp\Client;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,12 +34,30 @@ class ProductController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Product::select('products.*', 'product_categories.name as category')->leftJoin('product_categories', 'products.category_id', '=', 'product_categories.id')->get();
+            $data = Product::select('products.*', 'product_categories.name as category', 'users.name as karyawan')->leftJoin('users', 'products.user_id', '=', 'users.id')->leftJoin('product_categories', 'products.category_id', '=', 'product_categories.id')->get();
 
             return Datatables::of($data)->addIndexColumn()->make(true);
         }
 
         return view('product.index');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function myAsset(Request $request)
+    {
+        $user = Auth::user();
+        if ($request->ajax()) {
+
+            $data = Product::select('products.*', 'product_categories.name as category')->leftJoin('product_categories', 'products.category_id', '=', 'product_categories.id')->where('user_id', $user->id)->get();
+
+            return Datatables::of($data)->addIndexColumn()->make(true);
+        }
+
+        return view('product.myasset');
     }
 
     /**
@@ -69,13 +99,13 @@ class ProductController extends Controller
      */
     public function show(Request $request)
     {
-        $transaction = Transaction::select('transactions.*', DB::raw('DATE_FORMAT(transactions.date, "%d-%m-%Y") as date'), 'users.name as karyawan', 'products.name as asset')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->leftJoin('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')->leftJoin('products', 'transaction_details.product_id', '=', 'products.id')->where('transaction_details.product_id', $request->id)->get();
+        $poduct = Product::select('products.*', 'product_categories.name as category', 'users.name as karyawan', DB::raw('DATE_FORMAT(products.purchase_date, "%d-%M-%Y") as purchase_date'))->leftJoin('users', 'products.user_id', '=', 'users.id')->leftJoin('product_categories', 'products.category_id', '=', 'product_categories.id')->where('products.id', $request->id)->first();
 
-        // $transaction_details = TransactionDetail::select('transaction_details.*', 'products.name as asset', 'products.serial_number as sn')->leftJoin('products', 'transaction_details.product_id', '=', 'products.id')->where('transaction_details.transaction_id', $transaction->id)->get();
+        $transaction = Transaction::select('transactions.*', DB::raw('DATE_FORMAT(transactions.date, "%d-%m-%Y") as date'), 'users.name as karyawan', 'products.name as asset', DB::raw('DATE_FORMAT(products.purchase_date, "%d-%M-%Y") as purchase_date'))->leftJoin('users', 'transactions.user_id', '=', 'users.id')->leftJoin('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')->leftJoin('products', 'transaction_details.product_id', '=', 'products.id')->where('transactions.status', 'approve')->where('transaction_details.product_id', $request->id)->get();
 
         return response()->json([
+            'product' => $poduct,
             'transaction' => $transaction,
-            // 'transaction_details' => $transaction_details,
         ]);
     }
 
@@ -129,5 +159,77 @@ class ProductController extends Controller
         Product::where('id', $id)->delete();
 
         return redirect('/product')->with('success', 'Berhasil Dihapus!!');
+    }
+
+    public function getAccurate(Request $request)
+    {
+        $tokens = AccessToken::first();
+        $alldata = null;
+        try {
+
+            $output = self::$client->request(
+                'POST',
+                $tokens->host . '/accurate/api/fixed-asset/list.do?fields=id,name',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $tokens->token,
+                        'X-Session-ID' => $tokens->session,
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ],
+                ]
+            );
+
+            $output = json_decode($output->getBody(), true);
+
+            // dd($output);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            $output = $responseBodyAsString;
+            $output = json_decode($output, true);
+            $output['success'] = false;
+            $output['error'] = 'Accurate, Sedang Terjadi Gangguan!!';
+        } catch (\GuzzleHttp\Exception\RequestException $er) {
+            $output = $er->getResponse();
+            $output['success'] = false;
+            $output['error'] = 'Masalah Koneksi';
+        }
+        $dataid = $output['d'];
+        foreach ($dataid as $index => $data) {
+            try {
+
+                $output = self::$client->request(
+                    'POST',
+                    $tokens->host . '/accurate/api/fixed-asset/detail.do',
+                    [
+                        'headers' => [
+                            'Authorization' => 'Bearer ' . $tokens->token,
+                            'X-Session-ID' => $tokens->session,
+                            'Content-Type' => 'application/json',
+                            'Accept' => 'application/json',
+                        ],
+                        'json' => [
+                            'id' => $data['id'],
+                        ],
+                    ]
+                );
+
+                $output2 = json_decode($output->getBody(), true);
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                $response = $e->getResponse();
+                $responseBodyAsString = $response->getBody()->getContents();
+                $output = $responseBodyAsString;
+                $output = json_decode($output, true);
+                $output['success'] = false;
+                $output['error'] = 'Accurate, Sedang Terjadi Gangguan!!';
+            } catch (\GuzzleHttp\Exception\RequestException $er) {
+                $output = $er->getResponse();
+                $output['success'] = false;
+                $output['error'] = 'Masalah Koneksi';
+            }
+            $alldata[$index] = $output2;
+        }
+        return $alldata;
     }
 }

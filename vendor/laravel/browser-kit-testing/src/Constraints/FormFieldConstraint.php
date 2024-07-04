@@ -11,14 +11,14 @@ abstract class FormFieldConstraint extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $selector;
+    protected $selector;
 
     /**
      * The expected value.
      *
      * @var string
      */
-    protected readonly string $value;
+    protected $value;
 
     /**
      * Create a new constraint instance.

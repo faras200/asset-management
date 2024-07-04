@@ -54,7 +54,7 @@
                                         <th scope="col">Kategori</th>
                                         <th scope="col">SN</th>
                                         <th scope="col">Harga</th>
-                                        <th scope="col">Tanggal Pembelian</th>
+                                        <th scope="col">Dipakai Oleh</th>
                                         <th scope="col">Status</th>
                                         <th scope="col" class="text-right">Aksi</th>
 
@@ -80,7 +80,7 @@
 
                 <div class="modal-header">
                     <div class="col-6">
-                        <h3 class="modal-title" id="modal-title-default">Detail Transaksi</h3>
+                        <h3 class="modal-title" id="modal-title-default">Detail Asset</h3>
                     </div>
                     <div class="col-6" align="right">
                         {{-- <button id="links" class="btn btn-success btn-sm"><i class="fa fa-print"></i>
@@ -96,6 +96,10 @@
                             <br>
                             <div style="font-size: 16px;" id="nama_asset"></div>
                             <br>
+                            <label>Tanggal Pembelian</label>
+                            <br>
+                            <div style="font-size: 16px;" id="tanggal_beli"></div>
+                            <br>
 
                             <label>Riwayat Transaksi</label>
                         </div>
@@ -106,6 +110,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Uuid</th>
+                                        <th>Karyawan</th>
                                         <th>Tipe</th>
                                         <th>Tanggal</th>
                                     </tr>
@@ -187,8 +192,8 @@
                         name: 'price'
                     },
                     {
-                        data: 'purchase_date',
-                        name: 'purchase_date'
+                        data: 'karyawan',
+                        name: 'karyawan'
                     },
                     {
                         data: 'status',
@@ -197,21 +202,19 @@
                     {
                         render: function(data, type, row) {
                             return '<div style="text-align: right;">' +
-                                '<a href="/product/' + row.id +
-                                '/edit" class="btn btn-icon btn-primary btn-sm" type="button">' +
-                                '<span class="btn-inner--icon"><i class="fas fa-edit text-white"></i></span></a> ' +
-                                '<form class="d-inline" action="/product/' + row.id +
-                                '" method="post" onsubmit="return confirmDelete(event)" style="display: inline;">' +
-                                '<input type="hidden" name="_method" value="delete">' +
-                                '<input type="hidden" name="_token" value="' + $(
-                                    'meta[name="csrf-token"]').attr('content') + '">' +
-                                '<button type="submit" class="btn btn-icon btn-danger btn-sm">' +
-                                '<span class="btn-inner--icon"><i class="fas fa-trash-alt"></i></span>' +
-                                '</button></form>' +
-                                '&nbsp;&nbsp;<button class="btn btn-success btn-sm" onclick="Lihat(' +
-                                row
-                                .id +
-                                ')"><i class="fa fa-eye"></i></button></div>';
+                                //     '<a href="/product/' + row.id +
+                                //     '/edit" class="btn btn-icon btn-primary btn-sm" type="button">' +
+                                //     '<span class="btn-inner--icon"><i class="fas fa-edit text-white"></i></span></a> ' +
+                                //     '<form class="d-inline" action="/product/' + row.id +
+                                //     '" method="post" onsubmit="return confirmDelete(event)" style="display: inline;">' +
+                                //     '<input type="hidden" name="_method" value="delete">' +
+                                //     '<input type="hidden" name="_token" value="' + $(
+                                //         'meta[name="csrf-token"]').attr('content') + '">' +
+                                //     '<button type="submit" class="btn btn-icon btn-danger btn-sm">' +
+                                //     '<span class="btn-inner--icon"><i class="fas fa-trash-alt"></i></span>' +
+                                //     '</button></form>' +
+                                '<button class="btn btn-success btn-sm" onclick="Lihat(' +
+                                row.id + ')"><i class="fa fa-eye"></i></button></div>';
                         }
 
                     }
@@ -251,21 +254,28 @@
                 },
                 success: function(response) {
                     var content_data = '';
-                    var nama_asset = '';
+                    var nama_asset = response.product.name;
+                    var tanggalBeli = response.product.purchase_date;
 
-                    var no = 1;
-                    $.each(response.transaction, function(index, data) {
-                        nama_asset = data.asset;
-                        content_data += '<tr>';
-                        content_data += '<td>' + (no++) + '</td>';
-                        content_data += '<td>' + data.uuid + '</td>';
-                        content_data += '<td>' + data.type + '</td>';
-                        content_data += '<td>' + data.date + '</td>';
-                        content_data += '</tr>';
-                    });
+                    if (response.transaction.length === 0) {
+                        content_data =
+                            '<tr ><td style="text-align: center;" colspan="5">No data available</td></tr>';
+                    } else {
+                        var no = 1;
+                        $.each(response.transaction, function(index, data) {
+                            content_data += '<tr>';
+                            content_data += '<td>' + (no++) + '</td>';
+                            content_data += '<td>' + data.uuid + '</td>';
+                            content_data += '<td>' + data.karyawan + '</td>';
+                            content_data += '<td>' + data.type + '</td>';
+                            content_data += '<td>' + data.date + '</td>';
+                            content_data += '</tr>';
+                        });
+                    }
 
                     $('#contentnya').html(content_data);
                     $('#nama_asset').html(nama_asset);
+                    $('#tanggal_beli').html(tanggalBeli);
 
                 }
             });

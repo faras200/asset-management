@@ -11,14 +11,14 @@ class HasElement extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $selector;
+    protected $selector;
 
     /**
      * The attributes the element should have.
      *
      * @var array
      */
-    protected readonly array $attributes;
+    protected $attributes;
 
     /**
      * Create a new constraint instance.

@@ -14,6 +14,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\LaporanAbsenController;
 use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\LaporanPenggajianController;
+use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\ProductCategoryController;
 
 /*
@@ -51,7 +52,13 @@ Route::resource('administrator', AdministratorController::class)->middleware('au
 Route::resource('karyawan', KaryawanController::class)->middleware('auth');
 Route::resource('penggajian', PenggajianController::class)->middleware('auth');
 Route::resource('product', ProductController::class)->except(['show'])->middleware('auth');
+Route::get('my-asset', [ProductController::class, 'myAsset'])->middleware('auth');
+Route::get('product/accurate', [ProductController::class, 'getAccurate'])->middleware('auth');
 Route::resource('transaction', TransactionController::class)->except(['show'])->middleware('auth');
+Route::post('transaction/approve', [TransactionController::class, 'approve'])->name('transaction.approve')->middleware('auth');
+Route::post('transaction/tolak', [TransactionController::class, 'tolak'])->name('transaction.tolak')->middleware('auth');
+Route::post('transaction/kembalikan', [TransactionController::class, 'kembalikan'])->name('transaction.kembalikan')->middleware('auth');
+Route::resource('pengajuan', PengajuanController::class)->except(['show'])->middleware('auth');
 Route::resource('product-category', ProductCategoryController::class)->middleware('auth');
 Route::resource('laporan-absensi', LaporanAbsenController::class)->except([
     'create', 'store', 'update', 'destroy', 'show'

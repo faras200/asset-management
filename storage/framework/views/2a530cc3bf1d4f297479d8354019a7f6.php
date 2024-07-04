@@ -32,10 +32,11 @@
                                         <select id="type" name="type" required class="form-control"
                                             aria-label="With textarea" value="<?php echo e(old('type')); ?>">
                                             <option value="" selected disabled>Pilih</option>
-                                            <option value="pembelian">Pembelian</option>
+                                            <?php if(auth()->user()->role == 'admin'): ?>
+                                                <option value="pembelian">Pembelian</option>
+                                            <?php endif; ?>
                                             <option value="dipakai">Di Pakai</option>
-                                            <option value="diservis">Di Servis</option>
-                                            <option value="dihibah">Di Hibahkan</option>
+                                            
                                             <option value="dikembalikan">Di Kembalikan</option>
                                         </select>
                                         <?php $__errorArgs = ['status'];
@@ -111,25 +112,6 @@ unset($__errorArgs, $__bag); ?>
                             theme: "bootstrap4"
                         });
                     });
-                } else if (selectedType === 'diservis') {
-                    inputHtml = htmldiservis(i);
-                    $(document).ready(function() {
-                        $('.use-select2').select2({
-                            theme: "bootstrap4"
-                        });
-                        $('#asset-select2-' + i).select2({
-                            theme: "bootstrap4"
-                        });
-                    });
-                } else if (selectedType === 'dihibah') {
-                    inputHtml = `
-            <div class="col-lg-6">
-              <div class="form-group">
-                <label for="name">Nama</label>
-                <input type="text" name="name" class="form-control" id="name" placeholder="Nama karyawan" required>
-                <div class="text-danger" style="display:none;" id="error-name"> <!-- Placeholder for error message --> </div>
-              </div>
-            </div>`;
                 } else if (selectedType === 'dikembalikan') {
                     inputHtml = htmldikembalikan(i);
                     $(document).ready(function() {
@@ -153,9 +135,18 @@ unset($__errorArgs, $__bag); ?>
                 $('#dynamicTable').append(htmlProduct(i));
             });
 
-            $(document).on('click', '#addAsset', function() {
+            $(document).on('click', '#addAssetDipakai', function() {
                 ++i;
-                $('#dynamicTable').append(htmlAsset(i));
+                $('#dynamicTable').append(htmlAsset(i, 'dipakai'));
+
+                $('#asset-select2-' + i).select2({
+                    theme: "bootstrap4"
+                });
+
+            });
+            $(document).on('click', '#addAssetDikembalikan', function() {
+                ++i;
+                $('#dynamicTable').append(htmlAsset(i, 'dikembalikan'));
 
                 $('#asset-select2-' + i).select2({
                     theme: "bootstrap4"
@@ -165,6 +156,7 @@ unset($__errorArgs, $__bag); ?>
 
             function htmlPembelian(i) {
                 return `
+                 <?php if(auth()->user()->role == 'admin'): ?>
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Pembeli</label>
@@ -177,6 +169,7 @@ unset($__errorArgs, $__bag); ?>
                     `</select>
                     </div>
                     </div>
+                    <?php endif; ?>
             <div class="col-lg-6">
               <div class="form-group">
                 <label for="date">Tanggal Beli</label>
@@ -253,6 +246,7 @@ unset($__errorArgs, $__bag); ?>
 
             function htmldipakai(i) {
                 return `
+                 <?php if(auth()->user()->role == 'admin'): ?>
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Peminjam</label>
@@ -265,6 +259,7 @@ unset($__errorArgs, $__bag); ?>
                     `</select>
                     </div>
                     </div>
+                    <?php endif; ?>
             <div class="col-lg-6">
               <div class="form-group">
                 <label for="date">Tanggal Pinjam</label>
@@ -292,12 +287,14 @@ unset($__errorArgs, $__bag); ?>
                 <td> <select style="width: 100%" id="asset-select2-` + i + `" name="products[` + i + `][asset]" class="form-control"
                          value="<?php echo e(old('type')); ?>">
                         <option value="" selected disabled>Pilih Asset</option>` +
-                    assets.map(function(asset) {
-                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`
+                    assets.filter(function(asset) {
+                        return asset.status === 'available'; // Change 'available' to the desired status
+                    }).map(function(asset) {
+                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
                     }).join('') +
                     `</select></td>  
 
-                <td><button type="button" name="add" id="addAsset" class="btn btn-success">Add More</button></td>  
+                <td><button type="button" name="add" id="addAssetDipakai" class="btn btn-success">Add More</button></td>  
 
             </tr>  
 
@@ -306,7 +303,7 @@ unset($__errorArgs, $__bag); ?>
             `;
             }
 
-            function htmlAsset(i) {
+            function htmlAsset(i, tipe) {
                 return `
                 <tr>  
                 <td>` + (i + 1) + `</td>
@@ -314,8 +311,12 @@ unset($__errorArgs, $__bag); ?>
                 <td> <select style="width: 100%" id="asset-select2-` + i + `" name="products[` + i + `][asset]" class="form-control"
                         value="<?php echo e(old('type')); ?>">
                         <option value="" selected disabled>Pilih</option>` +
-                    assets.map(function(asset) {
-                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`
+                    assets.filter(function(asset) {
+                        return tipe == 'dipakai' ? asset.status === 'available' : tipe == 'dikembalikan' ? asset
+                            .status ===
+                            'in_use' : asset.status != null; // Change 'available' to the desired status
+                    }).map(function(asset) {
+                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
                     }).join('') +
                     `</select></td>  
 
@@ -327,6 +328,7 @@ unset($__errorArgs, $__bag); ?>
 
             function htmldikembalikan(i) {
                 return `
+                 <?php if(auth()->user()->role == 'admin'): ?>
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Pengembalian</label>
@@ -339,6 +341,7 @@ unset($__errorArgs, $__bag); ?>
                     `</select>
                     </div>
                     </div>
+                    <?php endif; ?>
             <div class="col-lg-6">
               <div class="form-group">
                 <label for="date">Tanggal Pengembalian</label>
@@ -366,12 +369,14 @@ unset($__errorArgs, $__bag); ?>
                 <td> <select style="width: 100%" id="asset-select2-` + i + `" name="products[` + i + `][asset]" class="form-control"
                          value="<?php echo e(old('type')); ?>">
                         <option value="" selected disabled>Pilih Asset</option>` +
-                    assets.map(function(asset) {
-                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`
+                    assets.filter(function(asset) {
+                        return asset.status === 'in_use'; // Change 'available' to the desired status
+                    }).map(function(asset) {
+                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
                     }).join('') +
                     `</select></td>  
 
-                <td><button type="button" name="add" id="addAsset" class="btn btn-success">Add More</button></td>  
+                <td><button type="button" name="add" id="addAssetDikembalikan" class="btn btn-success">Add More</button></td>  
 
             </tr>  
 

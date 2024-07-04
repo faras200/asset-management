@@ -9,7 +9,7 @@ class HasSource extends PageConstraint
      *
      * @var string
      */
-    protected readonly string $source;
+    protected $source;
 
     /**
      * Create a new constraint instance.

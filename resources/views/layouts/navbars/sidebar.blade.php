@@ -74,33 +74,48 @@
 
             <!-- Navigation -->
             <ul class="navbar-nav">
-                <li class="nav-item {{ Request::is('dashboard') ? 'active' : '' }}">
-                    <a class="nav-link" href="/dashboard">
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="/dashboard">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link" href="/administrator">
-                        <i class="ni ni-single-02 text-info"></i> {{ __('Administrator') }}
-                    </a>
-                </li> --}}
-                <li class="nav-item {{ Request::is('karyawan') ? 'active' : '' }}"">
-                    <a class="nav-link" href="/karyawan">
-                        <i class="ni ni-badge text-warning"></i> {{ __('Karyawan') }}
-                    </a>
-                </li>
+                @if (auth()->user()->role == 'karyawan')
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('my-asset') ? 'active' : '' }}" href="/my-asset">
+                            <i class="ni ni-bag-17 text-warning"></i> {{ __('My Asset') }}
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->role == 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('administrator') ? 'active' : '' }}" href="/administrator">
+                            <i class="ni ni-single-02 text-info"></i> {{ __('Administrator') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('karyawan') ? 'active' : '' }}" href="/karyawan">
+                            <i class="ni ni-badge text-warning"></i> {{ __('Karyawan') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('product-category') ? 'active' : '' }}"
+                            href="/product-category">
+                            <i class="ni ni-bullet-list-67 text-default"></i> {{ __('Kategori Asset') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('pengajuan') ? 'active' : '' }}" href="/pengajuan">
+                            <i class="ni ni-paper-diploma text-yellow"></i> {{ __('Pengajuan Pinjam') }}
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item">
-                    <a class="nav-link" href="/product-category">
-                        <i class="ni ni-settings-gear-65 text-default"></i> {{ __('Kategori Asset') }}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/product">
+                    <a class="nav-link {{ Request::is('product') ? 'active' : '' }}" href="/product">
                         <i class="ni ni-collection text-info"></i> {{ __('Asset') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/transaction">
+                    <a class="nav-link {{ Request::is('transaction') ? 'active' : '' }}" href="/transaction">
                         <i class="ni ni-planet text-success"></i> {{ __('Transaksi') }}
                     </a>
                 </li>
