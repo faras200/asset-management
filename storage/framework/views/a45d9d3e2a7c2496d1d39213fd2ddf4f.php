@@ -80,7 +80,7 @@
 
                     </a>
                 </li>
-                <?php if(auth()->user()->role == 'karyawan'): ?>
+                <?php if(Auth::user()->hasRole('Users')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo e(Request::is('my-asset') ? 'active' : ''); ?>" href="/my-asset">
                             <i class="ni ni-bag-17 text-warning"></i> <?php echo e(__('My Asset')); ?>
@@ -88,7 +88,7 @@
                         </a>
                     </li>
                 <?php endif; ?>
-                <?php if(auth()->user()->role == 'admin'): ?>
+                <?php if(Auth::user()->hasRole('Admin')): ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo e(Request::is('administrator') ? 'active' : ''); ?>" href="/administrator">
                             <i class="ni ni-single-02 text-info"></i> <?php echo e(__('Administrator')); ?>

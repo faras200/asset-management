@@ -48,7 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 
-Route::resource('administrator', AdministratorController::class)->middleware('auth');
+Route::resource('administrator', AdministratorController::class);
 Route::resource('karyawan', KaryawanController::class)->middleware('auth');
 Route::resource('penggajian', PenggajianController::class)->middleware('auth');
 Route::resource('product', ProductController::class)->except(['show'])->middleware('auth');

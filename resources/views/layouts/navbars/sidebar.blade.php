@@ -79,14 +79,14 @@
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
-                @if (auth()->user()->role == 'karyawan')
+                @if (Auth::user()->hasRole('Users'))
                     <li class="nav-item">
                         <a class="nav-link {{ Request::is('my-asset') ? 'active' : '' }}" href="/my-asset">
                             <i class="ni ni-bag-17 text-warning"></i> {{ __('My Asset') }}
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->role == 'admin')
+                @if (Auth::user()->hasRole('Admin'))
                     <li class="nav-item">
                         <a class="nav-link {{ Request::is('administrator') ? 'active' : '' }}" href="/administrator">
                             <i class="ni ni-single-02 text-info"></i> {{ __('Administrator') }}

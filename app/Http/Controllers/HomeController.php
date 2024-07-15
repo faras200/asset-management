@@ -30,8 +30,8 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-
-        if ($user->role == 'karyawan') {
+        $user = User::find($user->id);
+        if ($user->hasRole('users')) {
             return view('dashboard', [
                 'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get(),
                 'karyawans' => User::all(),
