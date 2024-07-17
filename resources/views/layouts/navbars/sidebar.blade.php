@@ -29,17 +29,9 @@
                         <i class="ni ni-single-02"></i>
                         <span>{{ __('My profile') }}</span>
                     </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="ni ni-settings-gear-65"></i>
-                        <span>{{ __('Settings') }}</span>
-                    </a>
-                    <a href="#" class="dropdown-item">
+                    <a href="http://absen.hdnapps.com" class="dropdown-item">
                         <i class="ni ni-calendar-grid-58"></i>
-                        <span>{{ __('Activity') }}</span>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                        <i class="ni ni-support-16"></i>
-                        <span>{{ __('Support') }}</span>
+                        <span>{{ __('Absensi') }}</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a href="{{ route('logout') }}" class="dropdown-item"
@@ -57,8 +49,9 @@
             <div class="navbar-collapse-header d-md-none">
                 <div class="row">
                     <div class="col-6 collapse-brand">
-                        <a href="{{ route('home') }}">
-                            <img src="{{ asset('argon') }}/img/brand/blue.png">
+                        <a class="navbar-brand font-weight-bold pt-0" href="{{ route('home') }}">
+                            <img src="{{ asset('img') }}/logo-hdn.png">
+                            &nbsp; AssetsHub
                         </a>
                     </div>
                     <div class="col-6 collapse-close">
@@ -124,15 +117,15 @@
             <!-- Divider -->
             <hr class="my-3">
             <!-- Heading -->
-            <h6 class="navbar-heading text-muted">Laporan</h6>
+            {{-- <h6 class="navbar-heading text-muted">Laporan</h6> --}}
             <!-- Navigation -->
 
             <ul class="navbar-nav mb-md-3">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="/laporan-absensi">
                         <i class="ni ni-book-bookmark"></i>Laporan Transaksi
                     </a>
-                </li>
+                </li> --}}
                 {{-- <li class="nav-item">
                     <a class="nav-link" href="/laporan-penggajian">
                         <i class="ni ni-money-coins"></i>Laporan Penggajian

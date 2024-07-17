@@ -1,1 +1,0 @@
-<?php /**PATH /Users/andysuryawan/Documents/warungkoki/asset-management/resources/views/layouts/navbars/navs/guest.blade.php ENDPATH**/ ?>

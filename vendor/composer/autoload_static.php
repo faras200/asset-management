@@ -737,6 +737,7 @@ class ComposerStaticInit87f41a66b44915f7fc2ff47f987e3a66
         'App\\Models\\Penggajian' => __DIR__ . '/../..' . '/app/Models/Penggajian.php',
         'App\\Models\\Product' => __DIR__ . '/../..' . '/app/Models/Product.php',
         'App\\Models\\ProductCategory' => __DIR__ . '/../..' . '/app/Models/ProductCategory.php',
+        'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',
         'App\\Models\\StatusKaryawan' => __DIR__ . '/../..' . '/app/Models/StatusKaryawan.php',
         'App\\Models\\Transaction' => __DIR__ . '/../..' . '/app/Models/Transaction.php',
         'App\\Models\\TransactionDetail' => __DIR__ . '/../..' . '/app/Models/TransactionDetail.php',

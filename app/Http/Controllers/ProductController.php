@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ProductCategory;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -169,13 +170,17 @@ class ProductController extends Controller
 
             $output = self::$client->request(
                 'POST',
-                $tokens->host . '/accurate/api/fixed-asset/list.do?fields=id,name',
+                $tokens->host . '/accurate/api/fixed-asset/list.do',
                 [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $tokens->token,
                         'X-Session-ID' => $tokens->session,
                         'Content-Type' => 'application/json',
                         'Accept' => 'application/json',
+                    ],
+                    'json' => [
+                        'sp.page' => $request->page ?? 1,
+                        'sp.pageSize' => 100,
                     ],
                 ]
             );
@@ -230,6 +235,37 @@ class ProductController extends Controller
             }
             $alldata[$index] = $output2;
         }
-        return $alldata;
+        $products = [];
+        foreach ($alldata as $value) {
+            if ($value['s']) {
+                $data = $value['d'];
+                $cekproduct = Product::where('accurate_id', $data['id'])->first();
+                $category = ProductCategory::where('accurate_id', $data['faType']['id'])->first();
+
+                if ($cekproduct === null) {
+                    $products[] = Product::create([
+                        'accurate_id' => $data['id'],
+                        'name' => $data['description'],
+                        'category_id' => $category->id,
+                        'price' => $data['assetCost'],
+                        'serial_number' => $data['number'],
+                        'status' => 'available',
+                        'purchase_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $data['transDate'])->format('Y-m-d'),
+                    ]);
+                } else {
+                    $products[] = $cekproduct->update([
+                        'accurate_id' => $data['id'],
+                        'name' => $data['description'],
+                        'category_id' => $category->id,
+                        'price' => $data['assetCost'],
+                        'serial_number' => $data['number'],
+                        'status' => 'available',
+                        'purchase_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $data['transDate'])->format('Y-m-d'),
+                    ]);
+                }
+            }
+        }
+
+        return response()->json($products);
     }
 }

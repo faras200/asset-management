@@ -51,6 +51,7 @@
                                     <tr>
                                         <th scope="col">No</th>
                                         <th scope="col">Nama</th>
+                                        <th scope="col">Accurate ID</th>
                                         <th scope="col" class="text-right">Aksi</th>
                                     </tr>
                                 </thead>
@@ -106,6 +107,10 @@
                     {
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        data: 'accurate_id',
+                        name: 'accurate_id'
                     },
                     {
                         render: function(data, type, row) {

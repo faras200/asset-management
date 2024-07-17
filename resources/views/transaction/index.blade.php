@@ -27,17 +27,10 @@
                                 <h6 class="text-uppercase text-light ls-1 mb-1">Master Data</h6>
                                 <h2 class=" mb-0">Transaksi</h2>
                             </div>
-                            <div class="col">
-                                <ul class="nav nav-pills justify-content-end">
-                                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales"
-                                        data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}'
-                                        data-prefix="$" data-suffix="k">
-                                        <a href="/transaction/create" class="nav-link py-2 px-3 active">
-                                            <span class="d-none d-md-block">Tambah data <i class="ni ni-fat-add"></i></span>
-                                        </a>
-                                    </li>
-
-                                </ul>
+                            <div class="col-lg-3 col-6">
+                                <a href="/transaction/create" class="nav-link btn btn-primary py-2 px-3 active">
+                                    <span class="">Tambah data <i class="ni ni-fat-add"></i></span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -190,14 +183,15 @@
                     {
                         render: function(data, type, row) {
                             return '<div style="text-align: right;">' +
-                                '<form class="d-inline" action="/transaction/' + row.id +
+                                '@if (Auth::user()->hasRole('Admin'))<form class="d-inline" action="/transaction/' +
+                                row.id +
                                 '" method="post" onsubmit="return confirmDelete(event)" style="display: inline;">' +
                                 '<input type="hidden" name="_method" value="delete">' +
                                 '<input type="hidden" name="_token" value="' + $(
                                     'meta[name="csrf-token"]').attr('content') + '">' +
                                 '<button type="submit" class="btn btn-icon btn-danger btn-sm">' +
                                 '<span class="btn-inner--icon"><i class="fas fa-trash-alt"></i></span>' +
-                                '</button></form>' +
+                                '</button></form> @endif' +
                                 '&nbsp;&nbsp;<button class="btn btn-success btn-sm" onclick="Lihat(' +
                                 row
                                 .id +

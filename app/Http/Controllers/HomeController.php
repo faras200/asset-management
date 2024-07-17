@@ -31,7 +31,7 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $user = User::find($user->id);
-        if ($user->hasRole('users')) {
+        if ($user->hasRole('Users')) {
             return view('dashboard', [
                 'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get(),
                 'karyawans' => User::all(),

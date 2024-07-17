@@ -34,7 +34,7 @@
                                         <select id="type" name="type" required class="form-control"
                                             aria-label="With textarea" value="{{ old('type') }}">
                                             <option value="" selected disabled>Pilih</option>
-                                            @if (auth()->user()->role == 'admin')
+                                            @if (Auth::user()->hasRole('Admin'))
                                                 <option value="pembelian">Pembelian</option>
                                             @endif
                                             <option value="dipakai">Di Pakai</option>
@@ -49,7 +49,6 @@
                                 </div>
 
                             </div>
-
                             <div id="dynamicInput" class="row">
 
                             </div>
@@ -149,7 +148,7 @@
 
             function htmlPembelian(i) {
                 return `
-                 @if (auth()->user()->role == 'admin')
+                 @if (Auth::user()->hasRole('Admin'))
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Pembeli</label>
@@ -172,6 +171,7 @@
             </div>
                 <div class="col-12">
                 <h4>Data Produk</h4>
+                <div class="table-responsive">
                 <table class="table table-bordered" id="dynamicTable">  
 
             <tr>
@@ -209,6 +209,7 @@
             </tr>  
 
         </table> 
+        </div>
             </div>
             `;
             }
@@ -239,7 +240,7 @@
 
             function htmldipakai(i) {
                 return `
-                 @if (auth()->user()->role == 'admin')
+                 @if (Auth::user()->hasRole('Admin'))
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Peminjam</label>
@@ -262,6 +263,8 @@
             </div>
                 <div class="col-12">
                 <h4>Data Assets</h4>
+                             <div class="table-responsive">
+
                 <table class="table table-bordered" id="dynamicTable">  
 
             <tr>
@@ -293,6 +296,7 @@
 
         </table> 
             </div>
+            </div>
             `;
             }
 
@@ -321,7 +325,7 @@
 
             function htmldikembalikan(i) {
                 return `
-                 @if (auth()->user()->role == 'admin')
+                 @if (Auth::user()->hasRole('Admin'))
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Pengembalian</label>
@@ -344,6 +348,7 @@
             </div>
                 <div class="col-12">
                 <h4>Data Assets</h4>
+                <div class="table-responsive">
                 <table class="table table-bordered" id="dynamicTable">  
 
             <tr>
@@ -374,6 +379,7 @@
             </tr>  
 
         </table> 
+            </div>
             </div>
             `;
             }

@@ -53,6 +53,7 @@ return array(
     'App\\Models\\Penggajian' => $baseDir . '/app/Models/Penggajian.php',
     'App\\Models\\Product' => $baseDir . '/app/Models/Product.php',
     'App\\Models\\ProductCategory' => $baseDir . '/app/Models/ProductCategory.php',
+    'App\\Models\\Role' => $baseDir . '/app/Models/Role.php',
     'App\\Models\\StatusKaryawan' => $baseDir . '/app/Models/StatusKaryawan.php',
     'App\\Models\\Transaction' => $baseDir . '/app/Models/Transaction.php',
     'App\\Models\\TransactionDetail' => $baseDir . '/app/Models/TransactionDetail.php',

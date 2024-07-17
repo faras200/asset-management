@@ -24,10 +24,11 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $user = User::find($user->id);
 
         if ($request->ajax()) {
 
-            if ($user->role == 'karyawan') {
+            if ($user->hasRole('Users')) {
                 $data = Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get();
             } else {
                 $data = Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->orderBy('transactions.created_at', 'desc')->get();
@@ -61,7 +62,15 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user()->role == 'karyawan' ? Auth::user()->id : $request->user;
+        $user = Auth::user();
+        $user = User::find($user->id);
+
+        if ($user->hasRole('Users')) {
+            $user = User::find($user->id);
+        } else {
+            $user = ['id' => $request->user];
+        }
+
         $date = $request->date;
 
         if ($request->type == 'pembelian') {
@@ -83,8 +92,8 @@ class TransactionController extends Controller
                 // Pastikan produk ditemukan sebelum mengupdate
                 if ($product) {
                     $product->update([
-                        'status' => Auth::user()->role == 'karyawan' ? 'available' : 'in_use',
-                        'user_id' =>  Auth::user()->role == 'karyawan' ? null : $user
+                        'status' => $user->hasRole('Users') ? 'available' : 'in_use',
+                        'user_id' =>  $user->hasRole('Users') ? null : $user['id']
                     ]);
 
                     // Simpan produk ke dalam array
@@ -111,9 +120,9 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create([
             'uuid' => "TRX" .  date('Ymd') . rand(100, 9999),
-            'user_id' => $user,
+            'user_id' => $user['id'],
             'type' => $request->type,
-            'status' => Auth::user()->role == 'karyawan' ? 'pengajuan' : 'approve',
+            'status' => $user->hasRole('Users') ? 'pengajuan' : 'approve',
             'date' => $date,
         ]);
 
@@ -263,7 +272,15 @@ class TransactionController extends Controller
     }
     public function kembalikan(Request $request)
     {
-        $user = Auth::user()->role == 'karyawan' ? Auth::user()->id : $request->user;
+        $user = Auth::user();
+        $user = User::find($user->id);
+
+        if ($user->hasRole('Users')) {
+            $user = User::find($user->id);
+        } else {
+            $user = ['id' => $request->user];
+        }
+
         $date = date('Y-m-d');
         $product = Product::find($request->id);
 
@@ -285,9 +302,9 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create([
             'uuid' => "TRX" .  date('Ymd') . rand(100, 9999),
-            'user_id' => $user,
+            'user_id' => $user['id'],
             'type' => 'dikembalikan',
-            'status' => Auth::user()->role == 'karyawan' ? 'pengajuan' : 'approve',
+            'status' => $user->hasRole('Users') ? 'pengajuan' : 'approve',
             'date' => $date,
         ]);
         $transactiondetail = TransactionDetail::create([

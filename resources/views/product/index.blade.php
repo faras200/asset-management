@@ -168,7 +168,10 @@
                     [25, 50, 100, 500, 1000, ],
                     [25, 50, 100, 500, 1000, ]
                 ],
-
+                columnDefs: [{
+                    "targets": [4],
+                    "render": $.fn.dataTable.render.number(',', '.', 0, 'Rp. ')
+                }, ],
                 pagingType: 'simple_numbers',
                 columns: [{
                         data: 'DT_RowIndex',

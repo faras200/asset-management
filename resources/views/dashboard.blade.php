@@ -128,43 +128,45 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4">
-                <div class="card shadow">
-                    <div class="card-header border-0">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h3 class="mb-0">Karyawan</h3>
-                            </div>
-                            <div class="col text-right">
-                                <a href="/karyawan" class="btn btn-sm btn-primary">See all</a>
+            @if (Auth::user()->hasRole('Admin'))
+                <div class="col-xl-4">
+                    <div class="card shadow">
+                        <div class="card-header border-0">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h3 class="mb-0">Karyawan</h3>
+                                </div>
+                                <div class="col text-right">
+                                    <a href="/karyawan" class="btn btn-sm btn-primary">See all</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="table-responsive">
-                        <!-- Projects table -->
-                        <table class="table align-items-center table-flush">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Nama</th>
-                                    <th scope="col">Kode</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($karyawans->take(10) as $karyawan)
+                        <div class="table-responsive">
+                            <!-- Projects table -->
+                            <table class="table align-items-center table-flush">
+                                <thead class="thead-light">
                                     <tr>
-                                        <th scope="row">
-                                            {{ $karyawan->name }}
-                                        </th>
-                                        <td>
-                                            {{ $karyawan->code }}
-                                        </td>
+                                        <th scope="col">Nama</th>
+                                        <th scope="col">Kode</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($karyawans->take(10) as $karyawan)
+                                        <tr>
+                                            <th scope="row">
+                                                {{ $karyawan->name }}
+                                            </th>
+                                            <td>
+                                                {{ $karyawan->code }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
 
     </div>

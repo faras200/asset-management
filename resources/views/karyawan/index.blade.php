@@ -112,8 +112,8 @@
                         name: 'name'
                     },
                     {
-                        data: 'code',
-                        name: 'code'
+                        data: 'username',
+                        name: 'username'
                     },
                     {
                         data: 'alamat',
