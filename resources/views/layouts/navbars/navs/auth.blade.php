@@ -30,6 +30,12 @@
                         <i class="ni ni-single-02"></i>
                         <span>{{ __('My profile') }}</span>
                     </a> --}}
+                    @if (Auth::user()->hasRole('Users'))
+                        <a href="http://absen.hdnapps.com" class="dropdown-item">
+                            <i class="ni ni-calendar-grid-58"></i>
+                            <span>{{ __('Absensi') }}</span>
+                        </a>
+                    @endif
 
                     <div class="dropdown-divider"></div>
                     @if (Auth::user()->hasRole('Admin'))

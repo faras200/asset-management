@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     use HasRoles;
 
-    protected $connection = 'session_database';
+    // protected $connection = 'session_database';
 
     protected $table = 'users';
     protected $fillable = [
