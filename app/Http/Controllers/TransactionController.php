@@ -63,13 +63,14 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $user = User::find($user->id);
+        $authuser = User::find($user->id);
 
-        if ($user->hasRole('Users')) {
+        if ($authuser->hasRole('Users')) {
             $user = User::find($user->id);
         } else {
-            $user = ['id' => $request->user];
+            $user = User::find($request->user);
         }
+
 
         $date = $request->date;
 
@@ -92,8 +93,8 @@ class TransactionController extends Controller
                 // Pastikan produk ditemukan sebelum mengupdate
                 if ($product) {
                     $product->update([
-                        'status' => $user->hasRole('Users') ? 'available' : 'in_use',
-                        'user_id' =>  $user->hasRole('Users') ? null : $user['id']
+                        'status' => $authuser->hasRole('Users') ? 'available' : 'in_use',
+                        'user_id' =>  $authuser->hasRole('Users') ? null : $user['id']
                     ]);
 
                     // Simpan produk ke dalam array
@@ -122,7 +123,7 @@ class TransactionController extends Controller
             'uuid' => "TRX" .  date('Ymd') . rand(100, 9999),
             'user_id' => $user['id'],
             'type' => $request->type,
-            'status' => $user->hasRole('Users') ? 'pengajuan' : 'approve',
+            'status' => $authuser->hasRole('Users') ? 'pengajuan' : 'approve',
             'date' => $date,
         ]);
 

@@ -78,12 +78,22 @@
             var categories = {{ Js::from($category) }}
             var users = {{ Js::from($users) }}
             var assets = {{ Js::from($assets) }}
+            var user = {{ Js::from(Auth::user()) }}
             var i = 0;
-            console.log(categories);
+            var karywanpengembali = user.id;
+
+            $(document).on('change', '#karyawan_pengembali', function() {
+                karywanpengembali = $(this).val();
+                i = 0;
+                $('#dynamicTable').html(htmlAssetKembali(i));
+                $('#asset-select2-' + i).select2({
+                    theme: "bootstrap4"
+                });
+            });
+
             $('#type').on('change', function() {
                 i = 0;
                 var selectedType = $(this).val();
-                console.log(selectedType);
                 var inputHtml = '';
 
                 if (selectedType === 'pembelian') {
@@ -222,7 +232,7 @@
 
                 <td> <select id="category" name="products[` + i + `][category]" class="form-control"
                         aria-label="With textarea" value="{{ old('type') }}">
-                        <option value="" selected disabled>Pilih</option>` +
+                        <option value="" selected disabled>Pilih Category</option>` +
                     categories.map(function(category) {
                         return `<option value="${category.id}">${category.name}</option>`
                     }).join('') +
@@ -307,11 +317,16 @@
 
                 <td> <select style="width: 100%" id="asset-select2-` + i + `" name="products[` + i + `][asset]" class="form-control"
                         value="{{ old('type') }}">
-                        <option value="" selected disabled>Pilih</option>` +
+                        <option value="" selected disabled>Pilih Asset</option>` +
                     assets.filter(function(asset) {
-                        return tipe == 'dipakai' ? asset.status === 'available' : tipe == 'dikembalikan' ? asset
-                            .status ===
-                            'in_use' : asset.status != null; // Change 'available' to the desired status
+                        if (tipe === 'dipakai') {
+                            return asset.status === 'available';
+                        } else if (tipe === 'dikembalikan') {
+                            return asset.status === 'in_use' && asset.user_id == karywanpengembali;
+                        } else {
+                            return asset.status !=
+                                null; // Ubah 'available' menjadi status yang diinginkan jika perlu
+                        }
                     }).map(function(asset) {
                         return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
                     }).join('') +
@@ -323,13 +338,46 @@
                 `
             }
 
+            function htmlAssetKembali(i) {
+                return `
+                 <table class="table table-bordered" id="dynamicTable">  
+
+                <tr>
+
+                    <th width="10%">No</th>
+
+                    <th>Asset</th>
+
+                    <th width="20%">Action</th>
+
+                </tr>
+                <tr>  
+                <td>` + (i + 1) + `</td>
+
+                <td> <select style="width: 100%" id="asset-select2-` + i + `" name="products[` + i + `][asset]" class="form-control"
+                        value="{{ old('type') }}">
+                        <option value="" selected disabled>Pilih Asset</option>` +
+                    assets.filter(function(asset) {
+                        return asset.status === 'in_use' && asset.user_id == karywanpengembali;
+                    }).map(function(asset) {
+                        return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
+                    }).join('') +
+                    `</select></td>  
+
+                 <td><button type="button" name="add" id="addAssetDikembalikan" class="btn btn-success">Add More</button></td>  
+
+                </tr>  
+                </table> 
+                `
+            }
+
             function htmldikembalikan(i) {
                 return `
                  @if (Auth::user()->hasRole('Admin'))
                 <div class="col-lg-6">
                     <div class="form-group">
                 <label for="user">Karyawan Pengembalian</label>
-                      <select required id="name" name="user" class="form-control use-select2"
+                      <select required id="karyawan_pengembali" name="user" class="form-control use-select2"
                         aria-label="With textarea" value="{{ old('type') }}">
                         <option value="" selected disabled>Pilih</option>` +
                     users.map(function(user) {
@@ -368,7 +416,8 @@
                          value="{{ old('type') }}">
                         <option value="" selected disabled>Pilih Asset</option>` +
                     assets.filter(function(asset) {
-                        return asset.status === 'in_use'; // Change 'available' to the desired status
+                        return asset.status === 'in_use' && asset
+                            .user_id == karywanpengembali; // Change 'available' to the desired status
                     }).map(function(asset) {
                         return `<option value="${asset.id}">${asset.name} (${asset.serial_number}) (${asset.status})</option>`;
                     }).join('') +

@@ -22,6 +22,7 @@
     <link href="{{ asset('argon') }}/vendor/nucleo/css/nucleo.css" rel="stylesheet">
     <link href="{{ asset('argon') }}/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
     <!-- Argon CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/loading.css">
     <link type="text/css" href="{{ asset('argon') }}/css/argon.css" rel="stylesheet">
 </head>
 
@@ -34,6 +35,7 @@
     @endauth
 
     <div class="main-content">
+        <div class="loading" style="display: none;">Loading&#8230;</div>
         @include('layouts.navbars.navbar')
         @yield('content')
         @auth

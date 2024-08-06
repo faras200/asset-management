@@ -53,7 +53,7 @@ Route::resource('karyawan', KaryawanController::class)->middleware('auth');
 Route::resource('penggajian', PenggajianController::class)->middleware('auth');
 Route::resource('product', ProductController::class)->except(['show'])->middleware('auth');
 Route::get('my-asset', [ProductController::class, 'myAsset'])->middleware('auth');
-Route::get('product/accurate', [ProductController::class, 'getAccurate'])->middleware('auth');
+Route::get('product/accurate', [ProductController::class, 'getAccurate'])->name('product.accurate')->middleware('auth');
 Route::resource('transaction', TransactionController::class)->except(['show'])->middleware('auth');
 Route::post('transaction/approve', [TransactionController::class, 'approve'])->name('transaction.approve')->middleware('auth');
 Route::post('transaction/tolak', [TransactionController::class, 'tolak'])->name('transaction.tolak')->middleware('auth');

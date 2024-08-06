@@ -32,9 +32,11 @@
                                     <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales"
                                         data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}'
                                         data-prefix="$" data-suffix="k">
-                                        {{-- <a href="/product/create" class="nav-link py-2 px-3 active">
-                                            <span class="d-none d-md-block">Tambah data <i class="ni ni-fat-add"></i></span>
-                                        </a> --}}
+                                        @if (Auth::user()->hasRole('Admin'))
+                                            <button id="links" onclick="SyncAccurate()" class="btn btn-danger btn-md"><i
+                                                    class="fa fa-sync"></i>
+                                                &nbsp;Sync Accurate</button>
+                                        @endif
                                     </li>
 
                                 </ul>
@@ -83,8 +85,7 @@
                         <h3 class="modal-title" id="modal-title-default">Detail Asset</h3>
                     </div>
                     <div class="col-6" align="right">
-                        {{-- <button id="links" class="btn btn-success btn-sm"><i class="fa fa-print"></i>
-                            &nbsp;Cetak</button> --}}
+
                     </div>
 
                 </div>
@@ -283,6 +284,35 @@
                 }
             });
 
+        }
+
+        function SyncAccurate() {
+            $('.loading').attr('style', 'display: block');
+            $.ajax({
+                type: 'GET',
+                url: "{{ route('product.accurate') }}",
+                data: {
+                    'page': '2',
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: "Berhasil",
+                        text: "Sync Data Accurate!",
+                        icon: "success"
+                    });
+
+                    $('.loading').attr('style', 'display: none');
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    Swal.fire({
+                        title: "Kesalahan!!",
+                        text: "Ada kesalahan, coba lagi nanti!",
+                        icon: "success"
+                    });
+
+                    $('.loading').attr('style', 'display: none');
+                }
+            });
         }
     </script>
 @endpush

@@ -33,13 +33,13 @@ class HomeController extends Controller
         $user = User::find($user->id);
         if ($user->hasRole('Users')) {
             return view('dashboard', [
-                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get(),
+                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->whereIn('transactions.status', ['approve', 'pengajuan'])->where('transactions.user_id', $user->id)->orderBy('transactions.created_at', 'desc')->get(),
                 'karyawans' => User::all(),
                 'assets' => Product::where('user_id', $user->id)->orderBy('created_at', 'desc')->get(),
             ]);
         } else {
             return view('dashboard', [
-                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->where('transactions.status', 'approve')->get(),
+                'transactions' => Transaction::select('transactions.*', 'users.name as karyawan')->leftJoin('users', 'transactions.user_id', '=', 'users.id')->whereIn('transactions.status', ['approve', 'pengajuan'])->get(),
                 'karyawans' => User::all(),
                 'assets' => Product::all(),
             ]);
